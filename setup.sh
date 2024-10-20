@@ -182,11 +182,34 @@ setup_docker_cache() {
     echo "Docker cache directory set to $PERSISTENT_DOCKER_CACHE_DIR."
 }
 
+# Function to forward home holder to data
+forward_home_holder() {
+    echo "Forwarding home folder to data..."
+
+    # Move existing home directory contents to the mount point if it doesn't exist there already
+    if [ ! -d "$MOUNT_POINT/home" ]; then
+        sudo mkdir -p "$MOUNT_POINT/home"
+        sudo rsync -a "$HOME/" "$MOUNT_POINT/home/"
+    fi
+
+    # Create a symbolic link from home to the mount point
+    if [ -d "$HOME" ] && [ ! -L "$HOME" ]; then
+        sudo rm -rf "$HOME"
+        ln -s "$MOUNT_POINT/home" "$HOME"
+        echo "Home directory forwarded to $MOUNT_POINT/home"
+    else
+        echo "Home directory is already forwarded or is a symbolic link."
+    fi
+}
+
 # Main script execution
 echo "Starting setup..."
 
 # Mount the data folder
 # mount_data_folder
+
+# Forward home holder to data
+forward_home_holder
 
 # Create symbolic links
 create_symbolic_links
