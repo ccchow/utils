@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Variables
+# Default Variables
 MOUNT_POINT="/mnt/data"
 SYMLINK_TARGETS=(
     "$HOME/data"
@@ -15,6 +15,49 @@ PERSISTENT_PIP_CACHE_DIR="$MOUNT_POINT/pip_cache"
 PERSISTENT_HF_CACHE_DIR="$MOUNT_POINT/huggingface_cache"
 HUGGINGFACE_TOKEN_FILE="$MOUNT_POINT/huggingface_token.txt"
 PERSISTENT_DOCKER_CACHE_DIR="$MOUNT_POINT/docker_cache"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --mount-point)
+            MOUNT_POINT="$2"
+            shift; shift
+            ;;
+        --data-device)
+            DATA_DEVICE="$2"
+            shift; shift
+            ;;
+        --file-system-type)
+            FILE_SYSTEM_TYPE="$2"
+            shift; shift
+            ;;
+        --persistent-conda-dir)
+            PERSISTENT_CONDA_DIR="$2"
+            shift; shift
+            ;;
+        --persistent-pip-cache-dir)
+            PERSISTENT_PIP_CACHE_DIR="$2"
+            shift; shift
+            ;;
+        --persistent-hf-cache-dir)
+            PERSISTENT_HF_CACHE_DIR="$2"
+            shift; shift
+            ;;
+        --huggingface-token-file)
+            HUGGINGFACE_TOKEN_FILE="$2"
+            shift; shift
+            ;;
+        --persistent-docker-cache-dir)
+            PERSISTENT_DOCKER_CACHE_DIR="$2"
+            shift; shift
+            ;;
+        *)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+    esac
+done
 
 # Function to mount the data folder
 mount_data_folder() {
