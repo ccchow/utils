@@ -181,7 +181,7 @@ setup_docker_cache() {
 echo "Starting setup..."
 
 # Mount the data folder
-mount_data_folder
+# mount_data_folder
 
 # Create symbolic links
 create_symbolic_links
