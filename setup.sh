@@ -22,6 +22,11 @@ while [[ $# -gt 0 ]]; do
     case $key in
         --mount-point)
             MOUNT_POINT="$2"
+            PERSISTENT_CONDA_DIR="$MOUNT_POINT/conda"
+            PERSISTENT_PIP_CACHE_DIR="$MOUNT_POINT/pip_cache"
+            PERSISTENT_HF_CACHE_DIR="$MOUNT_POINT/huggingface_cache"
+            HUGGINGFACE_TOKEN_FILE="$MOUNT_POINT/huggingface_token.txt"
+            PERSISTENT_DOCKER_CACHE_DIR="$MOUNT_POINT/docker_cache"
             shift; shift
             ;;
         --data-device)
