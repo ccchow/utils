@@ -60,24 +60,24 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Function to mount the data folder
-mount_data_folder() {
-    echo "Mounting data folder..."
+# mount_data_folder() {
+#     echo "Mounting data folder..."
 
-    # Create mount point if it doesn't exist
-    if [ ! -d "$MOUNT_POINT" ]; then
-        sudo mkdir -p "$MOUNT_POINT"
-    fi
+#     # Create mount point if it doesn't exist
+#     if [ ! -d "$MOUNT_POINT" ]; then
+#         sudo mkdir -p "$MOUNT_POINT"
+#     fi
 
-    # Mount the data volume
-    sudo mount -t "$FILE_SYSTEM_TYPE" "$DATA_DEVICE" "$MOUNT_POINT"
+#     # Mount the data volume
+#     sudo mount -t "$FILE_SYSTEM_TYPE" "$DATA_DEVICE" "$MOUNT_POINT"
 
-    if [ $? -ne 0 ]; then
-        echo "Failed to mount data folder."
-        exit 1
-    fi
+#     if [ $? -ne 0 ]; then
+#         echo "Failed to mount data folder."
+#         exit 1
+#     fi
 
-    echo "Data folder mounted at $MOUNT_POINT."
-}
+#     echo "Data folder mounted at $MOUNT_POINT."
+# }
 
 # Function to create symbolic links
 create_symbolic_links() {
