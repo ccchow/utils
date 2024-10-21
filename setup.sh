@@ -211,7 +211,35 @@ forward_home_holder() {
     fi
 }
 
-
+install_cuda_toolkit() {
+    echo "Installing CUDA Toolkit..."
+
+    # Check if CUDA Toolkit is already installed
+    if command -v nvcc &> /dev/null; then
+        echo "CUDA Toolkit is already installed."
+        return
+    fi
+
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+    sudo dpkg -i cuda-keyring_1.1-1_all.deb
+    sudo apt-get update
+    sudo apt-get -y install cuda-toolkit-12-6
+
+    echo "CUDA Toolkit installed."
+
+    # Set environment variables
+    export PATH="/usr/local/cuda-12.6/bin:$PATH"
+    export LD_LIBRARY_PATH="/usr/local/cuda-12.6/lib64:$LD_LIBRARY_PATH"
+
+    echo "CUDA Toolkit environment variables set."
+
+    # Verify installation
+    nvcc --version
+    nvidia-smi
+
+    echo "CUDA Toolkit installation complete."
+}
+
 # Mount the data folder
 if [ -n "$DATA_DEVICE" ]; then
     mount_data_folder
@@ -236,5 +264,8 @@ setup_docker_cache
 
 # Set up Conda
 setup_conda
+
+# Install CUDA Toolkit
+install_cuda_toolkit
 
 echo "Setup complete."
