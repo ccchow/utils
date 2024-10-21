@@ -15,6 +15,7 @@ PERSISTENT_PIP_CACHE_DIR="$MOUNT_POINT/pip_cache"
 PERSISTENT_HF_CACHE_DIR="$MOUNT_POINT/huggingface_cache"
 HUGGINGFACE_TOKEN_FILE="$MOUNT_POINT/huggingface_token.txt"
 PERSISTENT_DOCKER_CACHE_DIR="$MOUNT_POINT/docker_cache"
+PERSISTENT_PIP_DIR="$MOUNT_POINT/pip"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -27,6 +28,7 @@ while [[ $# -gt 0 ]]; do
             PERSISTENT_HF_CACHE_DIR="$MOUNT_POINT/huggingface_cache"
             HUGGINGFACE_TOKEN_FILE="$MOUNT_POINT/huggingface_token.txt"
             PERSISTENT_DOCKER_CACHE_DIR="$MOUNT_POINT/docker_cache"
+            PERSISTENT_PIP_DIR="$MOUNT_POINT/pip"
             shift; shift
             ;;
         --data-device)
@@ -57,6 +59,10 @@ while [[ $# -gt 0 ]]; do
             PERSISTENT_DOCKER_CACHE_DIR="$2"
             shift; shift
             ;;
+        --persistent-pip-dir)
+            PERSISTENT_PIP_DIR="$2"
+            shift; shift
+            ;;
         *)
             echo "Unknown option $1"
             exit 1
@@ -65,35 +71,23 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Function to mount the data folder
-# mount_data_folder() {
-#     echo "Mounting data folder..."
+mount_data_folder() {
+    echo "Mounting data folder..."
 
-#     # Create mount point if it doesn't exist
-#     if [ ! -d "$MOUNT_POINT" ]; then
-#         sudo mkdir -p "$MOUNT_POINT"
-#     fi
+    # Create mount point if it doesn't exist
+    if [ ! -d "$MOUNT_POINT" ]; then
+        sudo mkdir -p "$MOUNT_POINT"
+    fi
 
-#     # Mount the data volume
-#     sudo mount -t "$FILE_SYSTEM_TYPE" "$DATA_DEVICE" "$MOUNT_POINT"
+    # Mount the data volume
+    sudo mount -t "$FILE_SYSTEM_TYPE" "$DATA_DEVICE" "$MOUNT_POINT"
 
-#     if [ $? -ne 0 ]; then
-#         echo "Failed to mount data folder."
-#         exit 1
-#     fi
+    if [ $? -ne 0 ]; then
+        echo "Failed to mount data folder."
+        exit 1
+    fi
 
-#     echo "Data folder mounted at $MOUNT_POINT."
-# }
-
-# Function to create symbolic links
-create_symbolic_links() {
-    for SYMLINK_TARGET in "${SYMLINK_TARGETS[@]}"; do
-        if [ -L "$SYMLINK_TARGET" ]; then
-            echo "Symbolic link $SYMLINK_TARGET already exists."
-        else
-            ln -s "$MOUNT_POINT" "$SYMLINK_TARGET"
-            echo "Created symbolic link from $SYMLINK_TARGET to $MOUNT_POINT"
-        fi
-    done
+    echo "Data folder mounted at $MOUNT_POINT."
 }
 
 # Function to set up conda
@@ -135,6 +129,21 @@ setup_pip_cache() {
     export PIP_CACHE_DIR="$PERSISTENT_PIP_CACHE_DIR"
 
     echo "Pip cache directory set to $PIP_CACHE_DIR."
+}
+
+# Function to set up default pip path
+setup_pip_path() {
+    echo "Setting up default pip path..."
+
+    # Create pip directory if it doesn't exist
+    if [ ! -d "$PERSISTENT_PIP_DIR" ]; then
+        mkdir -p "$PERSISTENT_PIP_DIR"
+    fi
+
+    # Set pip directory environment variable
+    export PIP_TARGET="$PERSISTENT_PIP_DIR"
+
+    echo "Default pip path set to $PIP_TARGET."
 }
 
 # Function to set up Hugging Face cache
@@ -202,20 +211,22 @@ forward_home_holder() {
     fi
 }
 
-# Main script execution
-echo "Starting setup..."
-
+
 # Mount the data folder
-# mount_data_folder
+if [ -n "$DATA_DEVICE" ]; then
+    mount_data_folder
+else
+    echo "DATA_DEVICE not provided. Skipping mount_data_folder."
+fi
 
 # Forward home holder to data
 forward_home_holder
 
-# Create symbolic links
-create_symbolic_links
-
 # Set up pip cache
 setup_pip_cache
+
+# Set up default pip path
+setup_pip_path
 
 # Set up Hugging Face cache
 setup_huggingface_cache
