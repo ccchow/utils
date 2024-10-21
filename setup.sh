@@ -2,11 +2,11 @@
 
 # Default Variables
 MOUNT_POINT="/mnt/data"
-SYMLINK_TARGETS=(
-    "$HOME/data"
-    # Add more paths where you want to create symbolic links
-)
-DATA_DEVICE="/dev/sdb"  # Replace with the actual device name or identifier
+# SYMLINK_TARGETS=(
+#     "$HOME/data"
+#     # Add more paths where you want to create symbolic links
+# )
+# DATA_DEVICE="/dev/sdb"  # Replace with the actual device name or identifier
 FILE_SYSTEM_TYPE="ext4"  # Replace with the actual file system type if different
 
 # Paths for conda, pip, Hugging Face, and Docker
